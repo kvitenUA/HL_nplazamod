@@ -288,6 +288,11 @@ void EV_HLDM_DecalGunshot(pmtrace_t* pTrace, int iBulletType)
 		default:
 			// smoke and decal
 			EV_HLDM_GunshotDecalTrace(pTrace, EV_HLDM_DamageDecal(pe));
+			gEngfuncs.pEfxAPI->R_SparkStreaks(pTrace->endpos, 25, -200, 200);
+
+			int m_iSmoke = gEngfuncs.pEventAPI->EV_FindModelIndex("sprites/stmbal1.spr");
+
+			gEngfuncs.pEfxAPI->R_TempSprite(pTrace->endpos, pTrace->plane.normal, gEngfuncs.pfnRandomFloat(0.2, 0.4), m_iSmoke, kRenderTransAdd, kRenderFxNoDissipation, gEngfuncs.pfnRandomFloat(0.3, 0.9), 0.01, FTENT_FADEOUT);
 			break;
 		}
 	}
@@ -1579,6 +1584,62 @@ void EV_SnarkFire(event_args_t* args)
 //======================
 //	   SQUEAK END
 //======================
+
+/// <BERETTA START>
+
+void EV_BerettaFire(struct event_args_s* args) {
+	int idx;
+	Vector origin;
+	Vector angles;
+	Vector velocity;
+	bool empty;
+
+	Vector ShellVelocity;
+	Vector ShellOrigin;
+	int shell;
+	Vector vecSrc, vecAiming;
+	Vector up, right, forward;
+
+	idx = args->entindex;
+	VectorCopy(args->origin, origin);
+	VectorCopy(args->angles, angles);
+	VectorCopy(args->velocity, velocity);
+
+	empty = 0 != args->bparam1;
+	AngleVectors(angles, forward, right, up);
+
+	shell = gEngfuncs.pEventAPI->EV_FindModelIndex("models/shell.mdl"); // brass shell
+
+	if (EV_IsLocal(idx))
+	{
+		EV_MuzzleFlash();
+		gEngfuncs.pEventAPI->EV_WeaponAnimation(empty ? NPBERETTA_ANIM_SHOOT_EMPTY : NPBERETTA_ANIM_SHOOT, 2);
+
+		V_PunchAxis(0, -2.0);
+	}
+	if (!gHUD.cl_righthand->value)
+	{
+		EV_GetDefaultShellInfo(args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4);
+	}
+	else
+	{
+		EV_GetDefaultShellInfo(args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4);
+	}
+
+	EV_EjectBrass(ShellOrigin, ShellVelocity, angles[YAW], shell, TE_BOUNCE_SHELL);
+
+	gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/beretta_9mm.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong(0, 3));
+
+	EV_GetGunPosition(args, vecSrc, origin);
+
+	VectorCopy(forward, vecAiming);
+
+	EV_HLDM_FireBullets(idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_9MM, 0, &tracerCount[idx - 1], args->fparam1, args->fparam2);
+}
+
+
+/// </BERETTA END>
+
 
 void EV_TrainPitchAdjust(event_args_t* args)
 {

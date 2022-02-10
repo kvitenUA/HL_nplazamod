@@ -58,6 +58,24 @@ public:
 	bool m_fRegisteredSound; // whether or not this grenade has issued its DANGER sound to the world sound list yet.
 };
 
+//weapons define
+#define WEAPON_NONE 0
+#define WEAPON_CROWBAR 1
+#define WEAPON_GLOCK 2
+#define WEAPON_PYTHON 3
+#define WEAPON_MP5 4
+#define WEAPON_CHAINGUN 5
+#define WEAPON_CROSSBOW 6
+#define WEAPON_SHOTGUN 7
+#define WEAPON_RPG 8
+#define WEAPON_GAUSS 9
+#define WEAPON_EGON 10
+#define WEAPON_HORNETGUN 11
+#define WEAPON_HANDGRENADE 12
+#define WEAPON_TRIPMINE 13
+#define WEAPON_SATCHEL 14
+#define WEAPON_SNARK 15
+#define WEAPON_NPBERETTA 16
 
 // constant items
 #define ITEM_HEALTHKIT 1
@@ -367,6 +385,7 @@ constexpr DLL_GLOBAL const char* g_pModelNameLaser = "sprites/laserbeam.spr";
 inline DLL_GLOBAL short g_sModelIndexLaserDot;	 // holds the index for the laser beam dot
 inline DLL_GLOBAL short g_sModelIndexFireball;	 // holds the index for the fireball
 inline DLL_GLOBAL short g_sModelIndexSmoke;		 // holds the index for the smoke cloud
+inline DLL_GLOBAL short g_sModelIndexWallpuff;
 inline DLL_GLOBAL short g_sModelIndexWExplosion; // holds the index for the underwater explosion
 inline DLL_GLOBAL short g_sModelIndexBubbles;	 // holds the index for the bubbles model
 inline DLL_GLOBAL short g_sModelIndexBloodDrop;	 // holds the sprite index for blood drops
@@ -500,6 +519,61 @@ private:
 	unsigned short m_usFireGlock1;
 	unsigned short m_usFireGlock2;
 };
+
+
+/// NAKATOMI PLAZA MOD
+
+enum N_Animations
+{
+	NPBERETTA_ANIM_IDLE1 = 0,
+	NPBERETTA_ANIM_IDLE2 = 0,
+	NPBERETTA_ANIM_IDLE3 = 0,
+	NPBERETTA_ANIM_SHOOT = 1,
+	NPBERETTA_ANIM_SHOOT_EMPTY = 4,
+	NPBERETTA_ANIM_RELOAD = 5,
+	NPBERETTA_ANIM_RELOAD_NOT_EMPTY = 6,
+	NPBERETTA_ANIM_DRAW = 6,
+	NPBERETTA_ANIM_HOLSTER = 6,
+	NPBERETTA_ANIM_ADD_SILENCER = 6
+};
+
+class CNPBeretta : public CBasePlayerWeapon
+{
+public:
+	void Spawn() override;
+	void Precache() override;
+	int iItemSlot() override;
+	bool GetItemInfo(ItemInfo*) override;
+	bool AddToPlayer(CBasePlayer*) override;
+	bool Deploy() override;
+	void PrimaryAttack() override;
+	void BerettaFire(float flSpread, float flCycleTime, bool fUseAutoAim);
+	void Reload() override;
+	void WeaponIdle() override;
+
+private:
+	int m_iShell;
+
+	unsigned short m_usFireBeretta1;
+
+	bool UseDecrement() override
+	{
+#if defined(CLIENT_WEAPONS)
+		return true;
+#else
+		return false;
+#endif
+	}
+};
+
+
+
+
+/// END OF MOD
+
+
+
+
 
 enum crowbar_e
 {

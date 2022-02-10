@@ -64,7 +64,7 @@ bool CGlock::GetItemInfo(ItemInfo* p)
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = GLOCK_MAX_CLIP;
 	p->iSlot = 1;
-	p->iPosition = 1;
+	p->iPosition = 2;
 	p->iFlags = 0;
 	p->iId = m_iId = WEAPON_GLOCK;
 	p->iWeight = GLOCK_WEIGHT;
